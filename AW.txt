@@ -1,0 +1,971 @@
+Installing jupyter notebook on your ec2 instance--
+on putty terminal cmd prompt------
+
+ubuntu@ip-172-31-46-57:~$ sudo apt-get update
+
+Next installing jupyter notebook--
+
+$sudo apt install jupyter-notebook
+
+$jupyter notebook --ip 0.0.0.0 --no-browser
+
+Now the jupyter notebook has been started.JUst copy the givn url
+and replace 127.0.0.1 with your instance public ip.
+Copy this onto browser url.So,go backto ur ec2 running dashboard and look for public ipv4 address.
+just copy that-- and on your browser and replace with this.
+
+
+press enter--remember toput with http  and not https.
+
+Amazon machine images--
+So,1st stepis to select ami-amazon machine image which is ubuntu inour case.
+So,now wewill discuss ami in detail--
+lets say u want to work on a linux instance. and u installjupyter notebook. and then u install few more libraries like pandas ,numpyetc.
+and u want someone in urteam to do the experiments. Now, that person has tocreate that same environment.And many times the environment 
+that u want to replicate is much more complex.
+So,the ans iscreate an imageofinstance that u want.
+This image contains all the info tolaunch an instance.
+
+Features of AMI-
+provides all the pre-installed packages needed. Faster boot time. AMI takes your S3 space.
+By defualt all the imagesthat u createare private tou.U cnmakethempublic.
+
+How to create AMI's--
+1st goto ec2 dashboard --instances--actions--gotoimage and templates-- create image---3 options --
+imagename--jupyer notebook AMI
+2nd option is optional
+3rdno reboot--what happens amazon ec2 shutsdown the instance,take snapshots when u attach volummes,
+creates and registers the ami and then reboots theinstance.So u can select no reboot to avoid having ur instance shutdown.
+
+add volume is again optional.
+
+click create.
+
+Onceitscreated--uwillbetakenback tourinstance dashboard.
+
+So,inthe navigation bar on the left u will see instance bar and u see images-->ami-->click on that--
+
+Onceit is created,u can follow the same instance as u did for ubuntu machine.
+name this ami--like office_laptop_ami
+
+goto ec2 dashboard--
+launch instance
+In the navigation bar-- there is my amis--click on that--
+
+do allthe steps.Once u willlaunch thisinstance.Jupyer notebookis already installed.
+
+Compute servicesin AWS--
+1.Amazon lightsail or AWS lightsail--This is a lightweight virtual private servr.Here u get ssd storge,memory and sanpshots to
+protect ur data.
+Developers whoare looking for testing enviroor statrtups can use this.
+2.AWS Batch--For batch processing and scaling.U donot need toinstall any batch processing s/w.
+foreg letssay ur app process data stored in postgre and dynamodb everynight at midnight.So u
+define a jobin awsbatch and it executes whatever u define and it needs other computing resources like
+ec2 for that purpse but u donot need toworry about that.Soafter the data is processed
+u can analyze it and storeit.
+3.elastic beanstalk--this is a PAAS .u can use it to create web services.And it supports
+multiple lans like java,php,node.js,ruby,go.
+U just need toupload ur code and beanstalk will deploy ur code,need not worry about challengs like scaling.
+4.AWS lambda--It is a serverless computing in aws.Again u dont need to manage any resources.
+U just need to uploadur code. U can useit to create apis.Trigger ur code from other apis.
+5.Serverless app repository--It is a repositrory where u can search forpre-built application.
+Lets say u want an app for rewriting an email.So instead of rewriting app--u can search for it in repository 
+and configure it accr to ur needslike changing parameter variables etc.
+6. AWS outposts--Sometmes ur apprequire very high latency.Soin that case,
+u want to process ur data locally.In such case u can use AWS outposts.It gives exact experienceonpremises as 
+on cloud.
+
+Networking--
+Basic conceptsof networking part1--
+
+public and private n/w--
+public n/w is simply internet.Anyone aroundthe world can access it without any restriction.
+privaten/w--only the concerned people cn acecess it.
+
+Now,when we have many n/ws we need to send data from 1 n/w toanother.
+For that we need a deviceknown as gateway.It also servesas astopping point when data travels from1 n/w to another
+Internet gteway is used toconnect to internet.
+
+If u have a wifi router at home,then ur internet gateway is the modem of ur rouer that isd provides.
+
+IP Address--it is a unique addr that identifies a device on the internet or on a local n/w.
+eg 192.158.2.20
+where each part is of 8 nits. soit can range from0.0.0.0 to 255.255.255.255
+This notation is fro ipv4 addressing.We also have ipv6 addressing.
+This ip  addr has 2 parts. 1 identifies the n/w and the otherr host.
+based on this host part,ip addr can be dividedinto multiplecalsses.
+and each of these classses has amultiple range of ip addresses which defines a rangeof devices 
+u can have in ur n/w.
+class A--1st 8 bit n/w rest 24 host.It can have more than 16million hosts.
+class B-16 bits for n/w,next 16 bits for hosts. This can be used formedium to large size nw and can have around 65000 hosts.
+class C--1st 24 n/w rest 8 for host.It is used for samll size local area n/w.
+
+Categories of ipaddr--
+public ip addr and private ip addr--
+public ip addr is the addr which all devices outside ur n/w used to recognize ur n/w .
+private ipaddr can be used only frominside the n/w.
+
+Public ip addr is divided into -
+dynamic and static ip adddr--
+dynamic ip addr keeps on changing automatically on a reg basis.
+ISP providers buy large amount of ipaddresses .
+Static ip addr are constants.
+
+Subnets--Inside ur n/w u can make several divisions of ur n/w.The subn/ws inside ur larger n/wsare known as
+subnts.Creating subnets aer very useful as ur n/w traffic can travel a shorter dist without passing
+unnecessary routers to reach its destination.
+
+Lets say we have 6 divisions of our n/w and we need to send a pkt to a subnet4.
+So instead of scanningthe completen/w,ur n/w pkt will directly goto subnet4.
+
+U can createmultiple private and public n/ws.
+
+CIDR--classless inter domain routing--
+It is an IP addressing scheme that improvesthe allocation of IP addresses and replaces the oldsystem based on
+classes A,B,C.
+The challenges with old class system is no.of hosts.
+eg classA with16million+ hosts, class B-65,535 hosts an class c-254 hosts.
+
+Suppose we are currently working witth class C and we have 250 hosts-->we neeed 50more hosts i.e. 300 hosts-->then--u do this and u fallintoa classb n/w.
+and 65235 hosts are waisted.
+
+cidr ip addressing lookslike-- 
+192.158.2.20/20===>before / is ipaddr-- after / is no. of bits of n/w addr.
+i.e. 1st 20 bits for n/w and rest 12 for host.
+
+So,if we convert these numbers into binary then--
+1100 0000.1001 1110.0000 0010.1100 0000 
+------------------------
+           |
+           V
+          n/w            -------------- host
+
+Route tables-- these contains the set of rules and necessary info to fwd a pkt 
+along the best path towards its destination where each pkt contains info regarding
+its origin and destination.
+
+SSH--Secure shell- it provides a connection tou sou can connect toany virtul m/c.
+such that u can write cmds in urlocal m/c and it gets executedin the server.
+To establish an ssh connec,a remote m/c must be running a s/w known as ssh daemon.
+andthe user should must have ssh client s/w.
+
+VirtualPrivateCloud(VPC)--
+Amazon VPC lets us create ourown private n/win aws.It is aservicethat lets us launch aws resources
+in logically isolated virtual n/w that we define.
+We can have completecontrolover our virtualnetworking envio including selectionof our own ip addr range,
+creation of subnets and configuration of route tablesandn/w gateways..
+Inside our cloud,wecan create public subnets and connect them tothe internet gateway sothat the resources inside
+the public subnet can be accessed through the internet.
+wecan alsocreate multiplesubnetsinside our vpc.letssay 1 public, another privatesou can hosts 
+ur websitesintopublic and database and other monitoring tool in your privaten/w.
+
+Nowcreating vpc inside aws--
+it will have public and privatesubnet. And for each the subnets we will create a route tables and then we 
+willlaunch an ec2 instance inside both the subnets.
+We will attach internet gateway with the public subnet so that we canconnect to that subnet using the internet.
+Now,t connect to private subnet, we willconnect public ec2 instance with private ec2 instance 
+
+How to creat VPC--
+
+step 1-- create a vpcloud--
+suppose we want tocreate a n/w for 1000 devices.
+20.0.0.0/?--- 2^10=1024
+s0,weneed atleast 10 bits. and rest 22 for n/w.tf
+20.0.0.0/22
+So,goto aws mgmt console-- and completing step1--
+goto aws mgmt console---search for vpc--click on 1st option--
+See on left side pane-- clickon ur vpcs--aws bydefault gives vpc.We wont be using that.We will be creating our own
+On rhs click create vpc--u get diff text fields--
+nametag-- office_laptop-vpc
+ipv4 cidr--20.0.0.0/22-----this is a randomip addr.U can change itaccr to ur requirements.
+click create vpc.
+
+Step 2--creating subnets--dividing this n/winto 2 parts--public and private.
+
+goto--
+https://www.davidc.net/sites/default/subnets/subnets.html
+
+n/w addr-20.0.0.0,mask bits--22--update--ok
+click divide-- adn we got 2 subnets.--so we can make 1 of them publicanother one private.
+
+Just clickon your vpc on left to head back to vpc dashboard
+
+Now,click on subnets--3 subnets are there. bUt we willcreate our own.
+
+so,click create subnet on top right--
+vpcid-- what we just created i.e. office-laptop_vpc
+
+subnet name-- public-subnet
+
+ipv4 cidr blockk-- go to the site--select 1st one i.e 20.0.0.0/23.click create subnet
+
+Same steps for creating privaten/w--
+office_laptop_vpc
+private_vpc
+20.0.2.0/23--
+create subnet
+
+Ste 3-- creating roue tables--it contains set ofroutes to fwdthe pktalong thebest route aailable todeleiver todestination.
+
+On the lhs-- route tables--create route tables--
+name--public_route_table ,office_laptop_vpc--click create route table.
+
+Now,associating this with a subnet--scroll down a little bit--click subnet associations--
+click--edit subnet assocaiations--click public subnet--save associations.
+
+remeber--we can connect a single route table to multiple subnets,butin a single subnet we have just 1 route table.
+
+Now, from left pane--hit route tables agian--
+samesteps-- click create route table --....--select private_vpn
+
+Head back to route tables.
+
+4. create internet gateway--
+We will create this and connect it to public n/w.
+
+On the left --create internet gateways-- 
+name--office_laptop-internet_gateway--create internet gateway
+
+clickon actions--clickon attach to vpc-- select office_laptop_vpc--atachinternet gateway
+
+Next connectthe internet gateway tothe public route table.
+So head to route table in left pane--select public route table--clickon routes-->clickon edit routes--->
+add route---0.0.0.0/0--select internet gateway that we created---save changes
+
+Internet gateway connected topublic subnet
+
+Now,we willlaunch 2 ec2 instances--1in public another in private.
+
+So,head back to instances-- click launch instances---select amazon linux 2 kernel--
+under n/w --office_vpc,
+subnet--public subnet
+auto-assign public ip--click enable
+
+keep everything else same--
+
+for key pair-- select linuxkeys--clicki acknowledge--
+Now,go back to instances dashboard--
+rename this to public_instance---
+
+Now,creating privateinstance--same steps--with changes--
+n/w --office_laptop_vpc 
+subnet--private
+auto-assign--disable
+
+key pair linuxkeys---
+
+--launch instance---
+view all instances--rename it to private_instance
+
+Now,click on public_instance--scroll down alittle--in details u have both 
+public ipaddr and private ip addr--
+and for private_instance--nopublic ip adddr.
+
+Now,lets just 1st connect tothe public instance--select that and click connect--click connect again---
+and the public instance is launched in the browser itself.
+
+keep this window open.
+go backto instance dashboarrd--click onprivate instance and connect tothis aswell---warning--now how to connect toa private instance?
+Goto the new window where public instance is launched.
+$ vi key.ppk
+press enter insert
+copy linuxkeys.ppk to this file
+esc
+:wq
+our key.ppk file created.
+
+$chmod 400 key.ppk
+
+Now,the permissions of fileis changed.Now, wecan use ssh to accessour instance fromthe private n/w. so go back to 
+connect to instance aws page--Go to ssh client--just copy the ssh -i "linuxkeys.pem"....
+and paste it on the terminal  
+
+Network Access Control List--Now we will discuss about the security of this n/w.Andforthis we have n/w access control list--  
+ACL is a virtual firewall that controls inbound and outbound traffic at the subnet level.
+Whenever we send a request toan ec2 instance-- we doit inthe form of pkts.
+when this pkt enters into the n/w-- a firewall known as nacl--evaluates the pkt.This naclhas somepredefined rulesassociatedwith it.
+We can have nacl atthe subnetlevel.This nacl works on the concept of stateless packate filtering.
+NACL checks both incoming and ougoing pkt.
+
+Few rules which are defined are--
+inbound,
+rule number,  
+protocol/port range
+source
+allow/deny
+eg pkt is inbound,rule number-100,TCP/8888,109.20.30.33/allow
+2nd rule--
+inbound,110,ssh/22,anywhere,allow
+3rd 
+inbound,120,http/8883,109.10.30.33/deny
+4th
+inbound,140,ssh/22,anywhere,allow
+
+pkt comes from--
+ssh/22 100.3.33.33--1st rule doesnt satisfy.
+so chk 2nd. satisfies
+another pkt from http/8883 109.10.30.33
+deny
+
+How tocreate NACL--
+search for vpc--
+on the lhs--scroll down and see--security--network acls--
+--create network acl---name it--office_laptop_acl
+select office_laptop_vpc--create nw acl
+
+just click on it--scrolldown little--inbound rules--edit inbund rules--addnewrule--
+rulenumber lets say 100..so
+
+100,custom tcp,port range-8888,allow
+to block a specific ip addr--
+clickadd new rule--
+101,custom tcp,port-22,source-22.0.0.0/0 ,deny---save changes
+
+U cn do samething for outbound rules.
+just checck foroutbound rules
+
+Security groups--A security group is a virtual firewall that controls inbound and outbound traffic of an ec2 instance.
+
+Stateful pkt  filtering--here firewall remebers the active connections.Once the pkt is gone through the security check,
+it doesnt has to go again and again for security check.
+here,u can define ruleslike--
+inbound,allow,9090,109.20.30.33
+u can also define protocollike whether its from ssh,http etc
+inbound,allow,22,anywhere--
+outbound,allow,8888,109.20.30.33
+outbound,allow,9090,109.20.30.33 
+
+here we can only define allows and not deny
+
+By default when u create a security instance,a security groupis attatched 
+tothe ec2 instance.i.e. it will not allow any n/w pkt from anywhere.
+and outbound rules allow all outbound traffic.
+u can add upto 60 inbound and outbound rules to the instance.
+
+Creating security groups--
+security groups provide instnce level security while nacl provide n/w level security
+
+clickon ec2--
+scroll lhs-- n/wand security-->securiy groups---
+now,everytime we launch an instance,aws generates security group by default.---create security group--
+name- office_laptop_security_group
+descripion--allows jupyter connections  
+under vpc-- select our vpc.
+inbound rule-- addrule--
+customtcp,8888,anywhere ipv4--add rule
+customtcp,22,myip
+
+lly,u can create outbound rules--create security groups
+
+Shared responsibility model--
+Security services available in aws---
+its a shared responsibility model.So we as a cloud developer are responsible for security in the cloudand 
+security of the cloud.
+AWS is responsible for protecing all the hw/aws global infrastructure.
+It is responsible for securing all theregions,availability zones , edgepoints.
+This infrastructure is composd of both h/w and s/w like-
+where s/w like-- compute , storage,database,networking
+We as acloud developer are responsible for security ofclients data.
+give the access tothe right person whodoes't violate ur data policies.
+
+so,cloud developer takes care of--
+customer data
+platform,applications,identity and access mgmt
+os,n/w and firewallconfiguration
+client side encryption,server side encryption,n/w traffic protection
+
+Identity and access mgmt--
+When u created ur aws instance, u were given credentials of a root account.
+using that root account,u can access all the services in the aws like compute resources, storage,db,networking
+
+Now,u have multiple teamslike data science team,technology team,accounts team
+
+In ur aws environment u might be running some gpu instances,
+s3 buckets,databases like dynamodb,aws lambda & apisand billing dashboard.
+And we donot want allofthemto have same login and pwd to log into ur account.
+
+Soinstead of giving root level access to everyone, we can define access to each mmber of teamby Identity and Access Management(IAM)
+So u can create IAM mgmt account for each 1 of team members
+And using this u can handle access of ur aws account at no extra cost.
+Fine grained access control
+no extra cost
+no permissions by default.--but u can change the access.
+
+For eg-- for data science team -- u can give access of gpu instances and dynamo db
+tech team to s3 buckets,dynamo db,aws lambda and apis
+accounts team--billing dashboard.
+
+For this u require,policies and permissions--
+2 types of policies are--
+identity based policies--attached toiam account andtells what that particular id can do in aws environment.
+resource based policies--who can have the access to the resource and what actions they can perform.
+
+Iam policy looks something like a json.eg--
+{ "version":"2012-10-17"
+  "Statement":[
+      {
+	"Effect":"Allow",
+	"Action":["s3:*",
+		  "cloudwatch:*",
+		  "ec2:*"
+		],
+	"Resource":"*"
+      }]
+}
+
+so this is telling about all te services allowed.
+
+Identity based policies are of 2 types--
+AWS managed policies--It has pre defined policies for complete ec2and anymore.
+Inline policies--wehere u can define ur customized policies if u require.
+With IAM policy u get the permission tocreate a permissionboundary.
+It is an optional feature for themanaged policy.
+
+How tocreate IAM user account--
+Sogo to AWSconsole-- search fro IAM--IAM dashboard----click users from left pane--
+add users--
+put name--
+programatic access is whenu want to access using aws using cmdline,etc
+tick aws mgmt console access-- i want to create IAM user
+
+username:parinita
+fornow,select both of them--
+custom pwd:pawsSilver@19
+u can deselect reuire pwd reset.  
+ 
+resource based policies. 
+
+Under set permissions-- click on 3rd option--attach existing policies directly
+search--ec2fullaccess---select that--next---
+Skipping add new tagfornow---
+
+create user
+
+to change permissions lets say u want to change permissions--
+click on name of user-- scroll down--add permissions--attach policies directly--
+search s3 full-- add permissions--
+
+Iam policies--
+creating customized inline policies--
+1st is version--which version of policy lang we are using--
+to check the latest version of the policy lang-- 
+https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_version.html
+
+"Version": "2012-10-17"
+
+then is stmt--it can contain single or an array ofstmt.It si the main element of the policy where we define the stmts.
+"Statement":[{},{},{}]
+
+in each of the stmt-- we have the 1st element known as "Effect":"Allow"
+it specifies whether the stmt results in an allow or a deny.
+Next is Action-here we define the specific action or actoins that will be allowed or denied.
+"Action": "service-prefix:action-name"
+for eg--"ec2:StartInstances"----allows user to start any instance
+"s3:GetObject"---- user gets the permisssion of reading object fromthe s3 bucket.
+
+or u can simply write actions as  well. But this is case sensitive and should be written exactlyin awslike--
+["ec2:StartInstances","s3:GetObject"] 
+"Resourrce":"amazon resource names"---arn string
+condition is optional like--
+"Condition":{"{condition-operator}":
+		{"{condition-key}":"{condition-value}"
+		}}
+so finally it lookslike--
+{ "version" : "2012-10-17",
+  "Statement" : [{
+		"Effect" : "Allow",
+		"Action" : "ec2.*",
+		"Resource" : "amazon resource names",
+		"Condition":{
+  "DateGreaterThan" : {"aws:CurrentTime":"2020-04-01 T00:00:00Z"},
+  "DateLessThan" : {"aws:CurremtTime":"2020-06-30 T23:59:59Z"},
+
+}
+
+}]
+}
+
+How to create IAM policy---
+custom policy----
+we want to give fullec2 access to the userbut dont want the user tolaunch an instance in lets say
+hongkong region--
+Now,goto iam dashboard--click policies--- 
+click create policy on top right---click on choose apolicy---search fro ec2 and select 1st option
+click all ec2 actions--
+then clickon resources--click all resources--
+request conditions--add condition--search awsrequestedregion
+qualifier--default
+operator--stringNotEquals
+then value is the code for the hongkong region.
+the code for it is--ap-east-1
+
+next--next review--
+review policy--
+name--HK-Policy
+descri-- doesnot allow HK access.
+----create policy---
+
+Now,how touse this policy-- goto users--
+u can either add a new user or use existing user--
+
+clickonparinita--
+the 2 default policies arethere.remove them fornow.
+
+click add permissions toaddcustompolicy--
+attach policies directly--search hkpolicy--next---
+---add permissions---
+lets see an action now-- go back tousers--select username
+
+click on the ohio top right---
+
+IAM Groups--
+For big team-- u can use IAM Groups--
+u can define diff groupslike-- datascience group,tech group, accounts group--Define permisions or attch policies.
+
+Define Iam user account--select the groupand done. U donot need to define
+policies again and again.
+A single user can be added intomultiplegroups as well.
+
+How tocreate IAMgroups--wehave 100sor1000sof user towhomwe want to assignsame policy.
+search fro IAMdashboard--
+left pane--user groups--create group--
+give group  name--office_people--u can even add users tothe group--
+attach permissions--hk policy--create group
+
+So, whenever anew user comein-- u can attach user tothis group--and it hasthose policies.
+
+So,just clickusers from left pane--user name: lakshya---consolepwd--autogenerated--next permissions--
+select add user to group---select office_people group--next--tags optional--create user--
+
+Security Service-- AWS Shield and WAF--
+When a bad actor or hacker tries to findout vulnerabilities in our system and violates them,
+so that all the authorized users doesn't getthe response back.
+So,they use multiple systems and send millions of req so that the system gets busy sorting those req.
+This type of attack is known as distributed denial of service attack.
+So to protec fromany knid of attck, we have aws shield-- it is a service that protects applications against DDoS attacks.
+On aws it is +nt in 2 forms--
+shield standard and shield advance.
+sheld standard is a free version-- it protects all customers at no cost and protects ur aws resources from the most common types of DDoS attacks.
+It uses variety of automated tech to detect malicious traffic in real time and automatially mitigates it.
+Shield advanced is a paid srvice-- tat provide detailed attack diagnostics.
+It gives 24*7 access t the aws DDoS response Team(DRT).
+
+AWS Web Application Firewall(WAF)--
+WAF is a web app firewall that lets u monitor n/w requests that comeinto ur web apps.
+It can protect from sql injection attaclks,cross-site scripting,length of requests,
+ip addre of the requ,geographical location,regex
+
+Waf cannotbe associated with the ec2 instance.They ca be associated with load balancer,cloudfront
+
+Security Services:KMS and AWS inspector--
+Key Mgmt Serviceon AWS-- wee want data tobe secure, both when data is travelling i.e data in rest and when stored i.e. data at rest.
+To secure data,encryption is doone,.
+AWS KMS provides u with centralized control over the lifecycle and permissions of ur keys.
+it provides-- flexibility with accesscontrol,temporarily disablekeys,20000 free aws keymgmt service requests each month.
+
+AWS Inspector--in aws environment u can have many services running ata the same timelike-
+ec2instances,s3 buckets,dynamodb,aws lambda and apis, load balancers
+It goesthrough aws envir and run multiple automated security tests,
+lit down all the possible threats.The security team goes through this 
+and resolv the possible issues.
+
+#-------
+
+Storage in aws--  
+This is used to retain digital data.So wewill seetypes of storage available on cloud and when tous which one.
+block level storage--here storage systemis divided into multiple blocks,So large file is divided into multiple blocks.
+and is stored intothe blocks as perthe block size.
+Nowif u make any changes to the file, it will only return back the updated parts to the respecive blocks.
+So,if ur app requuires lots of updationin  the file,then tis is a good choice.
+
+justlike ur pen drive,u create snapshot of ur data on m/cA which can be recreated in m/cB.
+
+--by amazon ebs
+Filelevel storage--
+wecan create foldersinside folders and can store data in a hierarchical structure.
+dif types of files can be stored and we cn customize these folders permissions.
+Multiple vms cn share the samefilesystem.
+
+--amazon efs
+
+
+Object level storage--each data is broken into objects which is along with its metadataand key isstored .
+These objects can be of any type--image file,media file,staticwebsites,etc.
+Here when we make changes in a file,a new vrsionof the object is created.
+every object has url which  has some permissions  
+--amazon s3
+
+Amazon elastic block storage--EBS--
+when we workwith ec2 instance werequire cpu,memory,n/w , storage. If ur instance is in running state everuthing works normally.
+but when u stop this ec2 instance,u can nolonger access the data stored in storage.This is where amazon ebs comes.-elasticblock storage.
+u can connect it to any ec2 instance. When ur instance is in running state,u can store data in it just like ususal.
+now,even if u stop this instance, cpu,memory and n/w is lost but ebs volume will not loose data.
+ucan start any new ec2 instance and connect it to this ebs.
+
+So, ebs are virtual harddrives,ebs volume can persists between stops and starts of an ec2 instance.
+we can define the size type and configurations of te volume that we need.
+snapshots are incremental backups of data.
+
+How touse ebs on aws?
+just creat few instances like my-instance-1 and my-instance-2
+
+goto ebs on left pane--->volume--->attach vol---->
+generalpurposessd is default--->size 10gb--->availabilty zoneshould be same as 
+instance zone--->create vol--->name this vol1--->
+its state is available--->now we need toattach it with instance1--
+select vol1--->actions--->attach vol--->vol--instance--intance1---device let it--->attach
+state ischange toinuse.
+so goto intance--->select instance1---->storge-->newstorage attached.
+
+
+Note new volumes are raw block devices and we have to create a filesystembefore we canmount it to user.
+So,lets,connect instance1-->ec2 instance connect--->new window--->
+$ lsblk ---list allthe blocks
+Now u want touse a cmd to get info abut specific device, sush as its filesystem and
+if the o/p of that cmd gives data then it means there is nofilesystem onthe device.
+$ sudo file -s /dev/xvdf
+o/p--/dev/xvdf: data
+Sofirst ofall we need tocreate a file system.
+$ sudo mkfs -t xfs /dev/xvdf   
+Next we want tocreate a mount point
+$ sudo mkdir/data
+We name the mount point data
+Now,weneed a cmd tomount the vol and dire created in previous step
+$ sudo mount /dev/xvdf /data
+$ lsblk
+now creating some random data and put it into dir that we created.
+$ cd /data
+$ sudo mkdir parinita
+$ sudo touch sample.txt
+$ ls
+NOwgo back to instance and lets detach the volume that we have just cerated because ebs storage works ouside the instance.
+If we delete the instance.Allthe data wouldbe gone with it.
+Now,since itis an external ebs vol,we can attach it toanother instance ifwe want hence our data is also protected.
+
+cancel form ec2 linux shell
+
+Now goto vol--
+vol1 if uwill see is in-use.
+So,1st detach it.
+i.e. click vol1---->actions--->detach-->yes---refresh
+
+Now,goback to instances---terminate instance1-->
+
+Now,wewill attach vol1 to instance2---
+left pane-->volumes--->clickon vol1--->actions--->attach vol--->select instance2---->attach
+
+goback toinstances--->click instance2--->connect  
+here we just needto create amount point and start from there---
+$ sudo mkdir /data
+$ sudo mount /dev/xvdf /data-----cmd tomount the vol
+$ lsblk
+$ ls /data---------------points we created earlier exists.
+
+i.e. what we created inthe ebs instance exists outside ofthe instance and is savedevenwhen 
+we deleted the instance.
+
+Amazon elastic file system--
+After block level storage, next is file level storage.
+u have folders,hierarchies hereand is good for organizing ur data.
+It is alos a shared file system. Tf,multiple ec2 instances can share same filesystem.
+it is elastic and scalable.completely managed by aws.
+It is a true file system for linuxand doesnot work with windows instances as odf now.
+Stores data in multiple availability zones, and provide us with highly durable and avialblefile system
+Amazon ebs vs amazon efs--
+stores data in a single availabilty zone. Vs stores data across multiple 
+availbaility zones.
+Both ec2 instance and ebs volume must reside wihin the same availabiltiy zone vs ec2 instance and efs volume 
+can be +nt in diff availability zones.
+
+EFS on aws--
+search fro efs--
+clickcreate filesystem--
+name it lets say myefs--
+standard means u can store ur data redundantly across multiple zones.
+we willnow connect this to an ec2 instance.
+
+launch ec2 instance-- linux2---
+in no.of instances-- put 2 -- because we will see how to share file system between 2 instances.
+scrolldown and see file systems--
+launch system--linux_instance1,linux_instance2
+now we will coneect to efs.
+
+clickon linux_instance1---connect--ec2 instancce connect--launch----
+So 1st we will create a mount point--
+i.e
+$mkdir data---data is a mount point
+now goback to efs--click over myefs name--
+attach---- copy sudo mount command---and paste on terminal--
+$sudo mount -t efs -o tls fs-0a1248690986264a4:/ efs
+replace efs with ur mount point i.e. data 
+$sudo mount -t efs -o tls fs-0a1248690986264a4:/ data--------------------------------giving error next 3 rows-----------look
+$ cd data
+$ sudo mkdir analytics
+$ ls
+
+Nowgoto2nd intance--
+now, goto inctance2---attach efs--same steps
+after cd data
+$ ls
+
+
+Amazon s3 or Amazon simple storage service(s3)
+s3 stores data as objects in buckets
+maxi object size is 5 TB
+These objects are immune i.e. aws creates versionsof objects toprotect them from accidental deletion
+
+S3 bucket--
+howtocreate s3 bucket--
+search s3--create bucket--bucket name is a globaland unique name just like ur emailids. 
+soif u get error with a particulr name ,that means that is created earlier.
+name--bucket19112
+ifu enable bucket versioning,ithas a cost attached toit.
+
+just click over this bucket--
+create folder--name b1--create folder
+click over folder--upload--add file--upload some random file---
+---upload--
+click s3 destination button ---
+The imp thing is--nme of the object is the key here---
+if we upload a filewith the same name,this file willbe replaced by that file,unless we enable versioning.
+
+Now, click on the file--- download option comes--wecan downlod itfromthis console only,
+since we have bocked public access.
+u can aslo access these objects through url--by copy url option.--here because we have blocked public url--its access isblocked
+
+How tocreate s3 bucket using cli--
+
+
+ download aws cli
+clickon user name--security credentials--accesskeys--create new accesskey--u can have maxi of 2 access keys active orinactive.
+
+open normal cmd prompt
+$aws configure
+$accesskey--AKIARNJ7ITA7CJCUKL4Q
+$secret accesskey- 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
+rootkey.csv is a file-----download this file
+$ default region name:ap-south-1
+$default o/p format:json------default is json
+
+$ aws s3 ls
+next we can run a cmd tolist the objects inside any bucket--
+$ aws s3 ls bucket19112
+Now,we are inside this bucket and to download any file from this bucket 
+$ aws s3 cp    # we need a uri path-- so go back to aws console--search for s3 at top--clickon s3---find the bucket u r refering to--click on that-- 
+---select the object---go inside the object-i.e. pptx--copy s3 url 
+
+C:\Users\itvedant>aws s3 cp "s3://bucket19112/b1/Algorithm & Logic Building (1).pptx" C:\Users\itvedant\Downloads----done
+
+s3 bucket policy---2tyes---identity based and reource based
+adding custom policy to a bucket
+how to access objects in a bucket from a specific ip addr---this is useful in case of sensitive data which can be accessed from 1
+ip addr and not other.
+lets see how to create--  
+clcik on s3--
+click on the bucket bucket19112---upload some files--click on s3;//bucket19112--permissions---here we will attach custome polisy---bucket policy--edit--bucket arn is a unique id--click on policy generator--select type of policy--s3 bucket policy
+step 2-- add stmt--our aim is to allow access to the objects in the bucket from the  specific ip addr so effect is allow--in principal put *---actions--get object--
+copy bucket ARN and paste in ARN---now click on add conditions--1st condition is ip addr--key in our case is aws sourceip--value in our case is ip addr--just search in google my ip adress--2405:201:1a:83:398d:a501:e958:86eb or click what is my ip addr--49.36.122.75---click add condition
+this condition means-- ip addr should be from this ip---then click add stmt--click on generate policy--copy everything--head back to bucket policyy page and paste everything---save changes---some error u will get--but thats ok--in the pasted stuff-- get to resource--and put /* at the end-- ie.
+"Resource": "arn:aws:s3:::bucket19112/*",---save changes--
+head back to objects option---try to open up a new file--click on copy url---lets say open 1 incognito window---paste url-- done--
+
+S3 storage classes in s3 which differs in pricing and performance--6 diff classes--
+s3 standard, s3 standard infrequent access,s3 1 zone infrequent access, s3 intelligent tiering, s3 glacier,s3 glacier deep archive
+
+s3 standard is the most premium class of s3-- its for frequently accessed data,99.999% durable,stores data in min 3 availability zones,higher cost in comparison to othere classes.
+
+s3 stndrd infrequent access for infrequent data access but requiring high durability,also stores data in min 3 availability zones, has a lower storage price but higher retrieval price
+
+s3 1 zone infrequ access--stores data in single availabilty zone,pricing is lower than 1st one.
+
+s3 intelligent tiering-- for data that has changing access patterns,monitors object access patterns
+eg u have data in s3 standard and it is not acceseed for 30 days, then it is transferred to s3-IA(infrequent access) class and if ur objectv starts getting freq acces then again it is transferred back to s3 standard.
+s3 glacier---low cost storage,for storing archived customer records,old photos,retrieval time of objects is between few mins to hours.
+s3 glacier deep archive--lower storage cost,retrieve objects within 12 hours
+s3 lifecycle resources---set of rules that define actions on s3v objects. 
+transformation actions-choose on when to change the storage class.
+expiration actions--choose when to delete the s3 objects
+so object in s3 stndrd--not accessed for 30 days-- shifted to s3-IA---not accessed for 30 days-->shifted to s3 glacier
+
+u can maintain these types of lifecycles of the objects using s3 lifecycle policies.
+
+how to define s3 lifecycle policy?
+go to s3--click on bucket 19112---click on mgmt tab---create lifecycle rule---whenever we want to create a new obj, we want it to go to a certain class,lets say after 30 days--storage class after 60 days and automatically to get deleted after 90 days.--this is helpful in optimizing cost--so 1st name ur object--lets say-- modify-objects-every-90-days
+prefix u can out like .csv,etc such that it is applicable on that particular extension file--fo now we are leaving it blank--
+lifecycle rule actions--select 1st and 3rd option
+in transition current versions--days after object creation--30
+
+click add transition--this time select 1 zone-IA--60
+
+expire current versions of objects--90
+
+create rule--might get error--so go to choose a rule scope by scrolling up--click on this rule applies to all--click i acknowledge----click on create rule---
+now this is automatically assigned to a bucket.
+
+IAM Roles---in the IAM user account, we create policies and attach them to a particular user so that user can get specified permissions. In IAM roles where policies are not attached to the user rather the policies are attached to the aws services so that they can access the other aws services, such as ec2,s3,database,lambda.
+
+how to define iam roles--
+lets say we want to give ec2 access to s3.
+create a same linux m/c instance -- in our case we have instance2--connect---
+$ aws s3 ls--------error
+so head back and search for iam --on the left pane click on roles---create role---we are going with default aws service--u have tonnes of services here--since we want to get ec2 access to s3-- so click on ec2--next permissions---we want to give full access to s3-- so--type s3full--select that---click next---role name--access-s3-from-ec2---create role---u r in iam console now---role that we just created is there---now go back to ec2 again--select instance2---click on actions---scroll down--security--click modify IAM role--select access-s3-from-ec2--update iam role---
+now we just need to check if its working or not--
+so head back to cmd line--
+$aws s3 ls
+if error comes---run following cmds--
+sudo apt-get update
+sudo apt-get install awscli
+
+aws --version
+$aws s3 ls
+
+2023-02-27 09:54:09 bucket19112-------we got this o/p
+we got the access without facing error unable to locate credentials.
+
+
+Databases----------------------------
+Amazon Relational Database Service(RDS)----
+
+We generally have 2 kinds of databases--
+relational db eg mysql,postgresql,
+non relational db or nosql db--eg mongoDB and amazonDynamo DB
+
+U can get all these types of databases in awsand 1 way to get this is through ec2 instance.
+U caninstall any db u want and so u can have control over env variables,memory and storage capacity.
+Just likeuronpremise but u get more managed service-- which is known as amazon relational db service or RDS.
+
+So,using RDS u can run ur databases in the cloud.It support allthe db engines like--
+oracle,mysql,postgreSQL,SQLServer,MariaDB,AmazonAurora..With this u get automated backups,
+redundancy,failure,faster recovery,replication.,etc.
+
+how to launch mysql RDS--
+In aws console bar,search for rds--just scroll down and click create database.
+standard create--mysql---version--8.0.23----templates---production--settings--
+db-1 
+Master username-admin
+pwd--db1db1db
+db instance class-forprocessing powewr and memory requirements--burstable classes has smaller--
+so,select burstable classes---
+under storage---generalpurpose(SSD)gp2---
+allocated storage--20
+storage autosclaing--25
+availabilty and durability--
+click donot create--in our case single db instance
+
+connectivity--keeping default--u cn select ur own vpc too.
+keep in mind--after u create db,u can not change vpc.
+
+public access-yes
+
+vpc security group-- for now,keep it choose existing--
+existing vpc security group--default
+availability zone--fornow no preference
+
+database port--3306--keep it as it is for now.
+database authentication-- we will keep as pwd.
+
+and down uhave price calc--so for our course go for free tier.
+scrolldown and see for errors--do 20 in place of200
+
+come tothe option of vpc security group-------
+open a ec2 dashboard tab in new tab---
+now we will be creting security gruoup--
+so in left pane of ec2 dashb search for security groups--
+click create security group---
+call this security_group_for_db_access
+description--allows acces to the db
+vpc we will keep default one selected--
+for inbound--
+type---search forsql--andselect mysql 
+source--anywhere ipv4---
+
+next for outbound rules---
+type--mysql--destination--anywhere ipv4----
+create securty group----
+
+Now going back to rds console--
+reresh rds page-- select options again--
+
+remeber tokeep access public--
+existing vpc security groups --choose security_group_for_db_access
+cross default---
+once done-- clickcreate database
+
+--once its available---click ovr db-1
+
+Connecting to mysql---nowin the trminalwewill connect tothe database we have created.
+
+for connecting to db ,im launching a linux nased ec2 instance--
+linux_instance_db key pair name
+
+from ec2 instance i did connect--
+just copy endpoint and port by clicking db-1 
+
+so now gotoworkbench -- open workbench-- create a new connection-----
+
+https://www.google.com/search?q=Connect+AWS+RDS+MySQL+instance+with+ec2+instance&oq=Connect+AWS+RDS+MySQL+instance+with+ec2+instance&aqs=chrome..69i57.6597j0j7&sourceid=chrome&ie=UTF-8#kpvalbx=_htP9Y774GMOKz7sPlOW-mA0_47
+
+conne method:standard tcp/ip over ssh
+ssh hostname:ec2-44-198-159-123.compute-1.amazonaws.com----------public ipv4 dns of ec2 instance
+ssh username:ec2-user
+ssh key file:---get path to linux_instance_db.pem
+mysql hostname:db-1.cdhpw21pvxdm.us-east-1.rds.amazonaws.com--------------endpoint pf rds
+port:3306
+user name :admin
+password:db1db1db
+test connection--
+when the connection is succcessful--then give conn name and save the conn for future use.
+ 
+then connect and run-->show databases
+information_schema
+mysql
+performance_schema
+sys
+
+Amazon Aurora---------------------------
+it is aws most managed database option. Its 2 forms are-
+mysql and postgresql.It iscost effective ,1/10 to other databases,
+data is replicated,continuous backups to s3,point in time recovery.
+
+How tolaunch amazon aurora using rds---
+cometo rds-- create database--choose standard option---
+engine type---amazon aurora---
+edition--amazonaurora with mysql compatibiltiy--
+version--aurora(mysql5.7)2.07.2
+
+u dont have any free tier with this--choose production--
+db cluster identifier-- db-2
+master user name: admin
+pwd:db2db2db
+
+db instance class-burastable 2 gb--
+
+with multi az deployment---2 nodesare created
+write nodeand readnode,--keepit selected
+
+public  access-yes
+
+then go to ec2 dashboard--security groups--
+click on security group for db access--
+creating 1 moreinbund group--add rule---
+under custom tcp--click on mysql/aurora--source--anywhere ipv4--save rules--
+
+
+editoutbound rules---same
+save rules---done
+
+head back to rds--
+
+existing vpc security groups--security-group-for_db_access--leave default as itis---
+create database  
+ 
+
+
+
+
+
+
+
+
+
+   
